@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+if __name__ == '__main__':
+    import logging
+    import sys
+    import pyipko
+
+    logging.basicConfig(level=logging.DEBUG)
+
+    #args without dash
+    argv = sys.argv[1:]
+    for arg in argv:
+        if arg[0] == '-':
+            argv.remove(arg)
+
+    if not argv:
+        print('Too few arguments. Use --help if you are lost.')
+        sys.exit(1)
+
+    input_filename = argv[0]
+    output_filename = argv[1] if argv[1:] else None
+
+    extension = input_filename.split('.')[-1].lower()
+    if extension in ('xml', 'csv'):
+        file_format = extension
+    elif '-xml' in sys.argv[1:]:
+        file_format = 'xml'
+    elif '-csv' in sys.argv[1:]:
+        file_format = 'csv'
+    else:
+        print('Unknown file format. Use --help if you are lost.')
+        sys.exit(2)
+
+    converter = pyipko.Converter()
+    if file_format == 'xml':
+        converter.parse_from_XML(input_filename)
+    elif file_format == 'csv':
+        converter.parse_from_CSV(input_filename, 'iso-8859-2')
+
+    print(converter.to_mt940())
