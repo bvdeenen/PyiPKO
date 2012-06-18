@@ -36,4 +36,7 @@ if __name__ == '__main__':
     elif file_format == 'csv':
         converter.parse_from_CSV(input_filename, 'iso-8859-2')
 
-    print(converter.to_mt940())
+    mt940 = converter.to_mt940()
+    print(mt940)
+    with open('out.mt', 'w', encoding='cp852', errors='ignore') as fp:
+        fp.write(mt940)
