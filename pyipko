@@ -1,47 +1,63 @@
 #!/usr/bin/env python3
+import logging
 
 class Configuration(object):
-    modifiers = list()
+    options = set()
     file_format = None
     verbose = False
     input_filename = None
     output_filename = None
 
-    def __init__(self, cmdline_argv):
-        argv = cmdline_argv[1:]
+    logger = logging.getLogger(__name__)
 
-        #args without dash are self.modifiers
-        for arg in argv:
-            if arg[0] == '-':
-                self.modifiers.append(arg)
-                argv.remove(arg)
+    def __init__(self, cmdline_argv):
+        argv = list()
+
+        #args without dash are self.options
+        for arg in cmdline_argv[1:]:
+            if arg.startswith('-'):
+                self.options.add(arg)
+            else:
+                argv.append(arg)
+
+        self.logger.debug('options = %s', self.options)
+        self.logger.debug('argv = %s', argv)
 
         if not argv:
             raise Exception('Too few arguments.')
 
         self.input_filename = argv[0]
+        self.logger.debug('input_filename = %s', self.input_filename)
         self.output_filename = argv[1] if argv[1:] else None
+        self.logger.debug('output_filename = %s', self.input_filename)
 
-        self.verbose = '-v' in self.modifiers
+        self.verbose = '-v' in self.options
 
         extension = self.input_filename.split('.')[-1].lower()
         if extension in ('xml', 'csv'):
             self.file_format = extension
-        elif '-xml' in self.modifiers:
+        elif '-xml' in self.options:
             self.file_format = 'xml'
-        elif '-csv' in self.modifiers:
+        elif '-csv' in self.options:
             self.file_format = 'csv'
         else:
             raise Exception('Unknown file format.')
 
 
 if __name__ == '__main__':
-    import logging
     import sys
     import pyipko
 
     logging.basicConfig(level=logging.DEBUG)
+
+    logger = logging.getLogger(__name__)
+    logger.debug('sys.argv = %s', sys.argv)
+
     config = Configuration(sys.argv)
+
+    if not config.verbose:
+        logging.basicConfig(level=logging.INFO)
+
     converter = pyipko.Converter()
 
     if config.file_format == 'xml':
