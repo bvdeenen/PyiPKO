@@ -1,7 +1,6 @@
 import logging
 import datetime
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 class Operation(object):
@@ -9,7 +8,7 @@ class Operation(object):
         self.exec_date = None
         self.order_date = None
         self.operation_type = None
-        self.title = None
+        self.title = ''
         self.from_number = None
         self.from_addr = None
         self.amount = {'curr':None, 'val':None}
@@ -54,7 +53,7 @@ class Converter(object):
                 if elem.text:
                     for line in elem.text.splitlines():
                         if line.startswith('Tytu'):
-                            obj.title = line.split(': ', 1)[1] or ''
+                            obj.title = line.split(': ', 1)[1]
                         elif line.startswith('Dane adr. rach.'):
                             obj.from_addr = line.split(': ', 1)[1]
                         elif line.startswith('Nr rach.'):
@@ -103,6 +102,8 @@ class Converter(object):
         mt940 += ':61:{0} {1}\n\r'.format('', '')
         for operation in self.account_history.operations:
             mt940 += ':86:{0}{1}\n\r'.format('020~00', '')
+            logger.debug('operation = %s', operation)
+            logger.debug('operation.title = %s', operation.title)
             for line_num in range(6):
                 title_format = '~2{0}{1}\n\r'
                 start = line_num * 27
