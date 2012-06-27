@@ -13,7 +13,7 @@ class Configuration(object):
     def __init__(self, cmdline_argv):
         argv = list()
 
-        #args without dash are self.options
+        # args without dash are self.options
         for arg in cmdline_argv[1:]:
             if arg.startswith('-'):
                 self.options.add(arg)
@@ -23,16 +23,20 @@ class Configuration(object):
         self.logger.debug('options = %s', self.options)
         self.logger.debug('argv = %s', argv)
 
+        # no input file specified
         if not argv:
             raise Exception('Too few arguments.')
 
+        # fetching filenames
         self.input_filename = argv[0]
         self.logger.debug('input_filename = %s', self.input_filename)
         self.output_filename = argv[1] if argv[1:] else None
         self.logger.debug('output_filename = %s', self.input_filename)
 
+        # verbosity
         self.verbose = '-v' in self.options
 
+        # getting input file format
         extension = self.input_filename.split('.')[-1].lower()
         if extension in ('xml', 'csv'):
             self.file_format = extension
