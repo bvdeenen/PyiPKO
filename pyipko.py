@@ -54,7 +54,7 @@ class Converter(object):
                 if elem.text:
                     for line in elem.text.splitlines():
                         if line.startswith('Tytu'):
-                            obj.title = line.split(': ', 1)[1]
+                            obj.title = line.split(': ', 1)[1] or ''
                         elif line.startswith('Dane adr. rach.'):
                             obj.from_addr = line.split(': ', 1)[1]
                         elif line.startswith('Nr rach.'):
