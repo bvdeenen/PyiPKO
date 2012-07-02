@@ -9,7 +9,7 @@ if __name__ == '__main__':
     parser.add_argument('-v', dest='verbose',
             action='count', default=0,
             help='be verbose (or even extra verbose with -vv and -vvv)')
-    parser.add_argument(dest='input_filename', metavar='output',
+    parser.add_argument(dest='input_filename', metavar='input',
             action='store',
             help='input file to be parsed')
     parser.add_argument('-o', dest='output_filename', metavar='output',
