@@ -20,7 +20,7 @@ class Operation(object):
 class AccountHistory(object):
     def __init__(self):
         self.account = None
-        self.date = {'since': None, 'to':None}
+        self.date = {'since': None, 'to': None}
         self.filtering = None
         self.operations = list()
 
@@ -62,6 +62,10 @@ class Converter(object):
                             obj.from_addr = line.split(': ', 1)[1]
                         elif line.startswith('Nr rach.'):
                             obj.from_number = line.split(': ', 1)[1]
+                        else:
+                            obj.title = line
+                            obj.from_addr = str()
+                            obj.from_number = str()
                 elem = operation.findall('amount')[0]
                 obj.amount['curr'] = elem.attrib['curr']
                 obj.amount['val'] = elem.text
@@ -161,9 +165,8 @@ class Converter(object):
             mt940 += '~64{0}\r\n'.format('')
 
         # Footer
-        # TODO: Should be 'to' here?
         footer_date = datetime.datetime.strptime(
-                self.account_history.date['since'], '%Y-%m-%d')
+                self.account_history.date['to'], '%Y-%m-%d')
 
         currency = self.account_history.operations[0].ending_balance['curr']
         value = self.account_history.operations[0].ending_balance['val']
