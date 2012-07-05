@@ -16,9 +16,9 @@ if __name__ == '__main__':
             action='store', default=None, required=False,
             help='output file, if not specified the output will go to stdout')
     parser.add_argument('-f', dest='file_format',
-            action='store', default=None, required=False,
+            action='store', default='xml', required=False,
             choices=('xml', 'csv'),
-            help='input file format')
+            help='input file format, if not specified xml')
 
     config = parser.parse_args()
 
@@ -44,7 +44,12 @@ if __name__ == '__main__':
     if config.verbose:
         print(mt940)
 
-    if config.output_filename:
-        with open(config.output_filename, 'w',
-                encoding='cp852', errors='ignore') as fp:
-            fp.write(mt940)
+    if config.output_filename is None:
+        file_name = config.input_filename[:-4]
+        file_name += ".sta"
+    else:
+        file_name = config.output_filename
+
+    with open(file_name, 'w', encoding='cp852', errors='ignore') as fp:
+        fp.write(mt940)
+

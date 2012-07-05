@@ -55,17 +55,18 @@ class Converter(object):
                 obj.operation_type = elem.text
                 elem = operation.findall('description')[0]
                 if elem.text:
+                    obj.title = str() 
+                    obj.from_addr = str()
+                    obj.from_number = str()
                     for line in elem.text.splitlines():
                         if line.startswith('Tytu'):
                             obj.title = line.split(': ', 1)[1]
-                        elif line.startswith('Dane adr. rach.'):
+                        elif line.startswith('Dane adr. rach.') or line.startswith('Dane adr. rach. przeciwst.'):
                             obj.from_addr = line.split(': ', 1)[1]
-                        elif line.startswith('Nr rach.'):
+                        elif line.startswith('Nr rach.') or line.startswith('Nr rach. przeciwst.'):
                             obj.from_number = line.split(': ', 1)[1]
                         else:
                             obj.title = line
-                            obj.from_addr = str()
-                            obj.from_number = str()
                 elem = operation.findall('amount')[0]
                 obj.amount['curr'] = elem.attrib['curr']
                 obj.amount['val'] = elem.text
@@ -83,7 +84,10 @@ class Converter(object):
         reader = csv.reader(open(filename, 'r', encoding=encoding),
                 delimiter=',', quotechar='"')
         self.account_history = AccountHistory()
-        for row in reader:
+        for line, row in enumerate(reader):
+            print(row)
+            if line == 0:
+                continue
             try:
                 operation = Operation()
                 operation.exec_date = datetime.datetime.strptime(
@@ -96,8 +100,19 @@ class Converter(object):
                 operation.ending_balance['curr'] = row[4]
                 operation.ending_balance['val'] = row[5]
                 operation.description = row[6]
+                try:
+                    if row[7] in ('Nr rach.', 'Nr rach. przeciwst.'):
+                        operation.from_number = line.split(': ', 1)[1]
+                    if row[8] in ('Dane adr. rach.', 'Dane adr. rach. przeciwst.'):
+                        operation.from_addr = line.split(': ', 1)[1]
+                except IndexError:
+                    operation.from_number = str()
+                    operation.from_addr = str()
                 #append to the operations list
                 self.account_history.operations.append(operation)
+                if line == 1:
+                    self.account_history.date['since'] = row[0]
+                self.account_history.date['to'] = row[1]
             except ValueError:
                 logger.exception('Problem parsing operation data.')
 
@@ -157,7 +172,7 @@ class Converter(object):
             mt940 += '~32{0}\r\n'.format(addr[0:27])
             mt940 += '~33{0}\r\n'.format(addr[27:27 + 27] or chr(255))
             mt940 += '~34{0}\r\n'.format('034')
-            mt940 += '~38{0}{1}\r\n'.format('PL',
+            mt940 += '~38{0}{1}\r\n'.format('PL' if len(operation.from_number) > 0 else '',
                         operation.from_number.replace(' ', ''))
             # If empty -> (char)255
             mt940 += '~63{0}\r\n'.format(chr(255))
