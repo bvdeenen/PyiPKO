@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', dest='file_format',
             action='store', default='xml', required=False,
             choices=('xml', 'csv'),
-            help='input file format, if not specified xml')
+            help='input file format, defaulting to xml')
 
     config = parser.parse_args()
 
@@ -45,11 +45,10 @@ if __name__ == '__main__':
         print(mt940)
 
     if config.output_filename is None:
-        file_name = config.input_filename[:-4]
-        file_name += ".sta"
+        file_name = '.'.join(config.input_filename.split('.')[:-1])
+        file_name += '.sta'
     else:
         file_name = config.output_filename
 
     with open(file_name, 'w', encoding='cp852', errors='ignore') as fp:
         fp.write(mt940)
-

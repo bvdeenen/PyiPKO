@@ -55,15 +55,15 @@ class Converter(object):
                 obj.operation_type = elem.text
                 elem = operation.findall('description')[0]
                 if elem.text:
-                    obj.title = str() 
+                    obj.title = str()
                     obj.from_addr = str()
                     obj.from_number = str()
                     for line in elem.text.splitlines():
                         if line.startswith('Tytu'):
                             obj.title = line.split(': ', 1)[1]
-                        elif line.startswith('Dane adr. rach.') or line.startswith('Dane adr. rach. przeciwst.'):
+                        elif line.startswith('Dane adr. rach.'):
                             obj.from_addr = line.split(': ', 1)[1]
-                        elif line.startswith('Nr rach.') or line.startswith('Nr rach. przeciwst.'):
+                        elif line.startswith('Nr rach.'):
                             obj.from_number = line.split(': ', 1)[1]
                         else:
                             obj.title = line
@@ -172,7 +172,7 @@ class Converter(object):
             mt940 += '~32{0}\r\n'.format(addr[0:27])
             mt940 += '~33{0}\r\n'.format(addr[27:27 + 27] or chr(255))
             mt940 += '~34{0}\r\n'.format('034')
-            mt940 += '~38{0}{1}\r\n'.format('PL' if len(operation.from_number) > 0 else '',
+            mt940 += '~38{0}{1}\r\n'.format('PL' if operation.from_number else '',
                         operation.from_number.replace(' ', ''))
             # If empty -> (char)255
             mt940 += '~63{0}\r\n'.format(chr(255))
