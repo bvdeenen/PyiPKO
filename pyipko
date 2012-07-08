@@ -45,7 +45,7 @@ if __name__ == '__main__':
         print(mt940)
 
     if config.output_filename is None:
-        file_name = '.'.join(config.input_filename.split('.')[:-1])
+        file_name = config.input_filename.split('.', 1)[0]
         file_name += '.sta'
     else:
         file_name = config.output_filename
