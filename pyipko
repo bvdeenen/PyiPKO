@@ -35,10 +35,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.ERROR)
     logger = logging.getLogger(__name__)
 
-    #if config.reverse == 1:
     converter = pyipko.Converter(config.reverse)
-    #else:
-    #    converter = pyipko.Converter(reverse = False)
 
     if config.file_format == 'xml':
         converter.parse_from_XML(config.input_filename)
