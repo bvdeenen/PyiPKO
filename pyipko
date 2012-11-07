@@ -9,6 +9,9 @@ if __name__ == '__main__':
     parser.add_argument('-v', dest='verbose',
             action='count', default=0,
             help='be verbose (or even extra verbose with -vv and -vvv)')
+    parser.add_argument('-r', dest='reverse',
+            action='store', default=1,
+            help='reverse the output records')
     parser.add_argument(dest='input_filename', metavar='input',
             action='store',
             help='input file to be parsed')
@@ -32,7 +35,10 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.ERROR)
     logger = logging.getLogger(__name__)
 
-    converter = pyipko.Converter()
+    #if config.reverse == 1:
+    converter = pyipko.Converter(config.reverse)
+    #else:
+    #    converter = pyipko.Converter(reverse = False)
 
     if config.file_format == 'xml':
         converter.parse_from_XML(config.input_filename)

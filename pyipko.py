@@ -26,6 +26,9 @@ class AccountHistory(object):
 
 
 class Converter(object):
+    def __init__(self, reverse):
+        self.reverse = True if reverse == 1 else False
+    
     def parse_from_XML(self, filename):
         import xml.etree.ElementTree as etree
         logger.info('Parsing from %s ...', filename)
@@ -140,7 +143,11 @@ class Converter(object):
                         currency.upper() if currency else '',
                         value if value else '')
         # Header end
-        for operation in self.account_history.operations:
+        
+        history_operations = reversed(self.account_history.operations)\
+                            if self.reverse else self.account_history.operations
+        
+        for operation in history_operations:
             operation_str = str(operation.amount['val'])
             # Operation description
             mt940 += ':61:{0}{1}{2}{3}{4}{5}{6:010}\r\n'.format(
